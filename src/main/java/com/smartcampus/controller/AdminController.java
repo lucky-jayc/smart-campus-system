@@ -63,8 +63,11 @@ public class AdminController {
                               RedirectAttributes redirectAttributes) {
         try {
             if (student.getId() == null) {
-                studentService.registerStudent(student, rawPassword);
-                redirectAttributes.addFlashAttribute("successMessage", "Student registered successfully!");
+                String assignedPassword = studentService.registerStudent(student, rawPassword);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Student " + student.getFullName() + " registered successfully! Login Password: " + assignedPassword);
+                redirectAttributes.addFlashAttribute("generatedPassword", assignedPassword);
+                redirectAttributes.addFlashAttribute("newUsername", student.getRegistrationNumber());
             } else {
                 studentService.updateStudent(student);
                 redirectAttributes.addFlashAttribute("successMessage", "Student updated successfully!");
@@ -72,6 +75,22 @@ public class AdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return "redirect:/admin/students/new";
+        }
+        return "redirect:/admin/students";
+    }
+
+    @GetMapping("/students/reset-password/{id}")
+    public String resetStudentPassword(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Student student = studentService.getStudentById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + id));
+            String newPass = userService.resetUserPassword(student.getUser().getId());
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Password reset for " + student.getFullName() + " (" + student.getRegistrationNumber() + ")! New Password: " + newPass);
+            redirectAttributes.addFlashAttribute("generatedPassword", newPass);
+            redirectAttributes.addFlashAttribute("newUsername", student.getRegistrationNumber());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error resetting password: " + e.getMessage());
         }
         return "redirect:/admin/students";
     }
@@ -116,8 +135,11 @@ public class AdminController {
                                RedirectAttributes redirectAttributes) {
         try {
             if (lecturer.getId() == null) {
-                lecturerService.registerLecturer(lecturer, rawPassword);
-                redirectAttributes.addFlashAttribute("successMessage", "Lecturer registered successfully!");
+                String assignedPassword = lecturerService.registerLecturer(lecturer, rawPassword);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Lecturer " + lecturer.getFullName() + " registered successfully! Login Password: " + assignedPassword);
+                redirectAttributes.addFlashAttribute("generatedPassword", assignedPassword);
+                redirectAttributes.addFlashAttribute("newUsername", lecturer.getStaffNumber());
             } else {
                 lecturerService.updateLecturer(lecturer);
                 redirectAttributes.addFlashAttribute("successMessage", "Lecturer updated successfully!");
@@ -125,6 +147,22 @@ public class AdminController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
             return "redirect:/admin/lecturers/new";
+        }
+        return "redirect:/admin/lecturers";
+    }
+
+    @GetMapping("/lecturers/reset-password/{id}")
+    public String resetLecturerPassword(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Lecturer lecturer = lecturerService.getLecturerById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid lecturer Id:" + id));
+            String newPass = userService.resetUserPassword(lecturer.getUser().getId());
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Password reset for " + lecturer.getFullName() + " (" + lecturer.getStaffNumber() + ")! New Password: " + newPass);
+            redirectAttributes.addFlashAttribute("generatedPassword", newPass);
+            redirectAttributes.addFlashAttribute("newUsername", lecturer.getStaffNumber());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error resetting password: " + e.getMessage());
         }
         return "redirect:/admin/lecturers";
     }

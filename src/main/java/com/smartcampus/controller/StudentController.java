@@ -20,17 +20,20 @@ public class StudentController {
     private final AttendanceService attendanceService;
     private final GradingService gradingService;
     private final ReportService reportService;
+    private final UserService userService;
 
     public StudentController(StudentService studentService,
                              AcademicService academicService,
                              AttendanceService attendanceService,
                              GradingService gradingService,
-                             ReportService reportService) {
+                             ReportService reportService,
+                             UserService userService) {
         this.studentService = studentService;
         this.academicService = academicService;
         this.attendanceService = attendanceService;
         this.gradingService = gradingService;
         this.reportService = reportService;
+        this.userService = userService;
     }
 
     private Student getCurrentStudent(Authentication auth) {
@@ -78,6 +81,25 @@ public class StudentController {
         Student student = getCurrentStudent(auth);
         model.addAttribute("student", student);
         return "student/profile";
+    }
+
+    @PostMapping("/profile/password")
+    public String changePassword(@RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Authentication auth,
+                                 RedirectAttributes redirectAttributes) {
+        if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "New passwords do not match!");
+            return "redirect:/student/profile";
+        }
+        if (newPassword.trim().length() < 6) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Password must be at least 6 characters long!");
+            return "redirect:/student/profile";
+        }
+        Student student = getCurrentStudent(auth);
+        userService.updatePassword(student.getUser().getId(), newPassword.trim());
+        redirectAttributes.addFlashAttribute("successMessage", "Password updated successfully!");
+        return "redirect:/student/profile";
     }
 
     @GetMapping("/courses")

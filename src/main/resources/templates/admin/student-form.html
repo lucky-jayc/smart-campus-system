@@ -94,9 +94,16 @@
                                 </select>
                             </div>
                             <div class="col-md-6" th:if="${student.id == null}">
-                                <label class="form-label fw-semibold small">Initial Account Password</label>
-                                <input type="password" class="form-control" name="rawPassword" placeholder="Default: password123">
-                                <small class="text-muted" style="font-size: 0.75rem;">Leave empty to default to password123</small>
+                                <label class="form-label fw-semibold small">Account Password</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="rawPassword" name="rawPassword" placeholder="Auto-generated if left blank">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="generateRandomPassword('rawPassword')">
+                                        <i class="bi bi-shuffle me-1"></i> Generate
+                                    </button>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="bi bi-info-circle me-1"></i>Leave blank for system to automatically create a secure password, or click Generate.
+                                </small>
                             </div>
                         </div>
 

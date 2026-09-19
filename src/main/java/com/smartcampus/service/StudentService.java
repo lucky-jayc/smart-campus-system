@@ -1,8 +1,7 @@
 package com.smartcampus.service;
 
 import com.smartcampus.model.*;
-import com.smartcampus.repository.CourseRegistrationRepository;
-import com.smartcampus.repository.StudentRepository;
+import com.smartcampus.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +15,16 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
     private final UserService userService;
+    private final ProgramRepository programRepository;
 
     public StudentService(StudentRepository studentRepository,
                           CourseRegistrationRepository courseRegistrationRepository,
-                          UserService userService) {
+                          UserService userService,
+                          ProgramRepository programRepository) {
         this.studentRepository = studentRepository;
         this.courseRegistrationRepository = courseRegistrationRepository;
         this.userService = userService;
+        this.programRepository = programRepository;
     }
 
     public List<Student> getAllStudents() {
@@ -38,21 +40,54 @@ public class StudentService {
     }
 
     public Optional<Student> getStudentByUsername(String username) {
-        return studentRepository.findByUserUsername(username);
+        Optional<Student> student = studentRepository.findByUserUsername(username);
+        if (student.isPresent()) {
+            return student;
+        }
+        student = studentRepository.findByRegistrationNumber(username);
+        if (student.isPresent()) {
+            return student;
+        }
+        // Fallback self-healing: if User exists with ROLE_STUDENT, auto-generate linked student profile
+        Optional<User> userOpt = userService.findByUsername(username);
+        if (userOpt.isPresent() && userOpt.get().getRole() == Role.ROLE_STUDENT) {
+            User user = userOpt.get();
+            Program defaultProgram = programRepository.findAll().stream().findFirst().orElse(null);
+            Student newStud = new Student(
+                    username.toUpperCase(),
+                    user,
+                    username,
+                    "Male",
+                    java.time.LocalDate.of(2003, 1, 1),
+                    "+256-750-000000",
+                    "Campus Hall",
+                    defaultProgram,
+                    1,
+                    1,
+                    "ACTIVE"
+            );
+            return Optional.of(studentRepository.save(newStud));
+        }
+        return Optional.empty();
     }
 
-    public Student registerStudent(Student student, String rawPassword) {
+    public String registerStudent(Student student, String rawPassword) {
+        String passwordToUse = (rawPassword != null && !rawPassword.trim().isEmpty())
+                ? rawPassword.trim()
+                : userService.generatePassword();
+
         if (student.getUser() == null) {
             String email = student.getRegistrationNumber().toLowerCase().replace("/", "") + "@campus.ac.ug";
             User user = userService.createUser(
                     student.getRegistrationNumber(),
-                    rawPassword != null && !rawPassword.isEmpty() ? rawPassword : "password123",
+                    passwordToUse,
                     email,
                     Role.ROLE_STUDENT
             );
             student.setUser(user);
         }
-        return studentRepository.save(student);
+        studentRepository.save(student);
+        return passwordToUse;
     }
 
     public Student updateStudent(Student student) {

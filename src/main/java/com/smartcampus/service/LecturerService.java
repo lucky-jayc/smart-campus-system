@@ -1,9 +1,7 @@
 package com.smartcampus.service;
 
 import com.smartcampus.model.*;
-import com.smartcampus.repository.CourseAssignmentRepository;
-import com.smartcampus.repository.CourseRegistrationRepository;
-import com.smartcampus.repository.LecturerRepository;
+import com.smartcampus.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,19 +68,24 @@ public class LecturerService {
         return Optional.empty();
     }
 
-    public Lecturer registerLecturer(Lecturer lecturer, String rawPassword) {
+    public String registerLecturer(Lecturer lecturer, String rawPassword) {
+        String passwordToUse = (rawPassword != null && !rawPassword.trim().isEmpty())
+                ? rawPassword.trim()
+                : userService.generatePassword();
+
         if (lecturer.getUser() == null) {
             String email = lecturer.getEmail() != null ? lecturer.getEmail() :
                     (lecturer.getStaffNumber().toLowerCase().replace("/", "") + "@campus.ac.ug");
             User user = userService.createUser(
                     lecturer.getStaffNumber(),
-                    rawPassword != null && !rawPassword.isEmpty() ? rawPassword : "password123",
+                    passwordToUse,
                     email,
                     Role.ROLE_LECTURER
             );
             lecturer.setUser(user);
         }
-        return lecturerRepository.save(lecturer);
+        lecturerRepository.save(lecturer);
+        return passwordToUse;
     }
 
     public Lecturer updateLecturer(Lecturer lecturer) {

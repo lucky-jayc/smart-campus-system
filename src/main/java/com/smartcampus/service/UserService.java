@@ -50,6 +50,41 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public String generatePassword() {
+        String upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        String lower = "abcdefghjkmnpqrstuvwxyz";
+        String digits = "23456789";
+        String specials = "!@#$%&*";
+        String all = upper + lower + digits + specials;
+
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        sb.append(upper.charAt(random.nextInt(upper.length())));
+        sb.append(lower.charAt(random.nextInt(lower.length())));
+        sb.append(digits.charAt(random.nextInt(digits.length())));
+        sb.append(specials.charAt(random.nextInt(specials.length())));
+        for (int i = 4; i < 9; i++) {
+            sb.append(all.charAt(random.nextInt(all.length())));
+        }
+
+        java.util.List<Character> chars = new java.util.ArrayList<>();
+        for (char c : sb.toString().toCharArray()) {
+            chars.add(c);
+        }
+        java.util.Collections.shuffle(chars, random);
+        StringBuilder result = new StringBuilder();
+        for (char c : chars) {
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    public String resetUserPassword(Long userId) {
+        String newPassword = generatePassword();
+        updatePassword(userId, newPassword);
+        return newPassword;
+    }
+
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

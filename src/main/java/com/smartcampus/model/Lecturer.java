@@ -17,7 +17,7 @@ public class Lecturer {
     private String staffNumber; // e.g. "LEC/2024/001"
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 

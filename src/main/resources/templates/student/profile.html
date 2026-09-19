@@ -56,6 +56,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Security & Password Change Card -->
+            <div class="campus-card mt-4">
+                <div class="card-header">
+                    <span class="fw-bold"><i class="bi bi-shield-lock me-2 text-warning"></i>Security & Password</span>
+                </div>
+                <div class="p-4">
+                    <form th:action="@{/student/profile/password}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">New Password</label>
+                                <input type="password" class="form-control" name="newPassword" placeholder="Minimum 6 characters" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Confirm New Password</label>
+                                <input type="password" class="form-control" name="confirmPassword" placeholder="Re-type new password" required>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-outline-primary fw-semibold">
+                                    <i class="bi bi-key me-1"></i> Update My Password
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

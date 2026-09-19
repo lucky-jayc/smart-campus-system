@@ -16,6 +16,21 @@
         </a>
     </div>
 
+    <!-- Credentials Alert Box when password generated or reset -->
+    <div th:if="${generatedPassword}" class="alert alert-warning border border-warning-subtle shadow-sm p-3 mb-4 rounded-3">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-key-fill fs-2 text-warning"></i>
+            <div>
+                <h6 class="fw-bold mb-1 text-dark">User Account Credentials Created / Reset:</h6>
+                <div class="small text-muted">
+                    Username: <code class="fw-bold text-primary fs-6" th:text="${newUsername}">LEC001</code> &bull;
+                    Password: <code class="fw-bold text-danger fs-6 bg-light p-1 rounded border" th:text="${generatedPassword}">password</code>
+                </div>
+                <small class="text-secondary d-block mt-1">Please copy and provide these credentials to the lecturer.</small>
+            </div>
+        </div>
+    </div>
+
     <div class="campus-card">
         <div class="card-header">
             <span class="fw-bold"><i class="bi bi-person-badge-fill me-2 text-primary"></i>Academic Staff Directory</span>
@@ -45,6 +60,10 @@
                         <td th:text="${lec.email}">dr.smith@campus.ac.ug</td>
                         <td th:text="${lec.phoneNumber != null ? lec.phoneNumber : 'N/A'}">+256</td>
                         <td class="text-end">
+                            <a th:href="@{/admin/lecturers/reset-password/{id}(id=${lec.id})}" class="btn btn-sm btn-outline-warning py-1 px-2 me-1"
+                               onclick="return confirm('Generate a new system password for this lecturer?')" title="Generate / Reset Password">
+                                <i class="bi bi-key text-dark"></i>
+                            </a>
                             <a th:href="@{/admin/lecturers/edit/{id}(id=${lec.id})}" class="btn btn-sm btn-outline-primary py-1 px-2 me-1" title="Edit">
                                 <i class="bi bi-pencil-square"></i>
                             </a>

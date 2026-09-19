@@ -29,82 +29,17 @@ public class ReportService {
     }
 
     // --- Transcript Data Structure ---
-    public static class SemesterTranscriptItem {
-        private final Semester semester;
-        private final AcademicYear academicYear;
-        private final List<Grade> grades;
-        private final double gpa;
-        private final int totalCreditUnits;
-
-        public SemesterTranscriptItem(Semester semester, AcademicYear academicYear, List<Grade> grades, double gpa, int totalCreditUnits) {
-            this.semester = semester;
-            this.academicYear = academicYear;
-            this.grades = grades;
-            this.gpa = gpa;
-            this.totalCreditUnits = totalCreditUnits;
-        }
-
-        public Semester getSemester() { return semester; }
-        public AcademicYear getAcademicYear() { return academicYear; }
-        public List<Grade> getGrades() { return grades; }
-        public double getGpa() { return gpa; }
-        public int getTotalCreditUnits() { return totalCreditUnits; }
+        public record SemesterTranscriptItem(Semester semester, AcademicYear academicYear, List<Grade> grades, double gpa,
+                                             int totalCreditUnits) {
     }
 
-    public static class StudentTranscript {
-        private final Student student;
-        private final List<SemesterTranscriptItem> semesterRecords;
-        private final double cumulativeGPA;
-        private final int totalCreditsEarned;
-        private final String academicStanding;
-
-        public StudentTranscript(Student student, List<SemesterTranscriptItem> semesterRecords, double cumulativeGPA, int totalCreditsEarned, String academicStanding) {
-            this.student = student;
-            this.semesterRecords = semesterRecords;
-            this.cumulativeGPA = cumulativeGPA;
-            this.totalCreditsEarned = totalCreditsEarned;
-            this.academicStanding = academicStanding;
-        }
-
-        public Student getStudent() { return student; }
-        public List<SemesterTranscriptItem> getSemesterRecords() { return semesterRecords; }
-        public double getCumulativeGPA() { return cumulativeGPA; }
-        public int getTotalCreditsEarned() { return totalCreditsEarned; }
-        public String getAcademicStanding() { return academicStanding; }
+    public record StudentTranscript(Student student, List<SemesterTranscriptItem> semesterRecords, double cumulativeGPA,
+                                    int totalCreditsEarned, String academicStanding) {
     }
 
-    public static class CoursePerformanceReport {
-        private final Course course;
-        private final AcademicYear academicYear;
-        private final Semester semester;
-        private final int totalStudents;
-        private final double averageScore;
-        private final int passCount;
-        private final int failCount;
-        private final double passRate;
-        private final List<Grade> grades;
-
-        public CoursePerformanceReport(Course course, AcademicYear academicYear, Semester semester, int totalStudents, double averageScore, int passCount, int failCount, double passRate, List<Grade> grades) {
-            this.course = course;
-            this.academicYear = academicYear;
-            this.semester = semester;
-            this.totalStudents = totalStudents;
-            this.averageScore = averageScore;
-            this.passCount = passCount;
-            this.failCount = failCount;
-            this.passRate = passRate;
-            this.grades = grades;
-        }
-
-        public Course getCourse() { return course; }
-        public AcademicYear getAcademicYear() { return academicYear; }
-        public Semester getSemester() { return semester; }
-        public int getTotalStudents() { return totalStudents; }
-        public double getAverageScore() { return averageScore; }
-        public int getPassCount() { return passCount; }
-        public int getFailCount() { return failCount; }
-        public double getPassRate() { return passRate; }
-        public List<Grade> getGrades() { return grades; }
+    public record CoursePerformanceReport(Course course, AcademicYear academicYear, Semester semester,
+                                          int totalStudents, double averageScore, int passCount, int failCount,
+                                          double passRate, List<Grade> grades) {
     }
 
     public StudentTranscript generateStudentTranscript(Student student) {

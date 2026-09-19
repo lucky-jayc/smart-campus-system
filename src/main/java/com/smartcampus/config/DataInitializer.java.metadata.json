@@ -1,4 +1,4 @@
 {
-  "summary": "DataInitializer CommandLineRunner for automated demo data seeding",
-  "updatedAt": "2026-09-12T05:05:08.317918500Z"
+  "summary":  "Robust idempotent DataInitializer ensuring all users, lecturers, students, and course data are reliably seeded",
+  "updatedAt":  "2026-09-17T13:34:24.383494300Z"
 }
